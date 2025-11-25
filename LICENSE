@@ -25,7 +25,7 @@ SOFTWARE.
 The file "src/Trees.jl" is copied from the Julia package GKMtools.jl of Giosuè
 Muratore and Daniel Holmes (see https://github.com/mgemath/GKMtools.jl)
 published under the same license. It is written by Csaba Schneider with
-contributions from Giosuè Muratore and used in the packages AtiyahBott.jl (see
+contributions from Giosuè Muratore and used in the package AtiyahBott.jl (see
 https://github.com/mgemath/AtiyahBott.jl), which is published under the
 following license:
 
