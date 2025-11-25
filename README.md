@@ -33,7 +33,7 @@ $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times\mathcal{A}_{g_k}].$$
 
 
 It also computes the smoothing relations between all of those trees.
-For example, to generate the trees for $k=2, g_1=1, g_2=5$, use
+For example, to generate the trees for $k=2, g_1=1, g_2=5$, use the following code in Julia:
 
     T15 = stratum_trees([1, 5])
 
@@ -58,8 +58,8 @@ To obtain the admcycles code, execute
 
     adm_code(T15, "A1A5", "A1A5")
 
-The first `"A1A5"` argument means that the output will be a file called `A1A5.sage`.
-The second `"A1A5"` argument is a prefix used to name the variables in this sage file.
+The first `"A1A5"` argument is a prefix used to name the variables in the sage file.
+The second `"A1A5"` argument means that the output will be a file called `A1A5.sage`.
 
 Executing this sage file will produce a variable called `Torelli_pullback`, which is precisely
 
