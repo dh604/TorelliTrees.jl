@@ -27,9 +27,13 @@ The package `TorelliTrees` exports three functions: `stratum_trees`, `compute_co
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 
-This function returns the collection of stratum trees that are relevant for the computation of $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times\mathcal{A}_{g_k}]$$.
+This function returns the collection of stratum trees that are relevant for the computation of
+
+$$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times\mathcal{A}_{g_k}].$$
+
+
 It also computes the smoothing relations between all of those trees.
-For example, to generate the trees for $k=2$, $(g_1,g_2)=(1, 4)$, use
+For example, to generate the trees for $k=2, g_1=1, g_2=5$, use
 
     T15 = stratum_trees([1, 5])
 
@@ -39,7 +43,7 @@ For example, the code
 
     T15 = stratum_trees([1, 5]; draw=true, folder_name="A1A5/")
 
-produces the relevant trees for $\mathrm{Tor}^*[\mathcal{A}_1\times\cdots\times\mathcal{A}_5]$ and produces pdf files `tree_1.pdf`, `tree_2.pdf`, etc. in the current directory.
+produces the relevant trees for $\mathrm{Tor}^*[\mathcal{A}_1\times\mathcal{A}_5]$ and produces pdf files `tree_1.pdf`, `tree_2.pdf`, etc. in the current directory.
 It also prints the latex code, which will assume that those pdf files will be placed in the folder `A1A5/` relative to the latex file.
 
 ### Step 2: Computing contributions using `compute_contributions`
