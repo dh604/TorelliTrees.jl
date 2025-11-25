@@ -3,9 +3,9 @@
 This [Julia](https://julialang.org/) package is used for the computations in _[paper title]_ by _[paper authors]_.
 It produces [admcycles](https://pypi.org/project/admcycles/) code that, when executed, computes
 
-$$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\overline{\mathcal{M}}_{g}^\mathrm{ct})$$
+$$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\mathcal{M}_{g}^\mathrm{ct})$$
 
-where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\overline{\mathcal{M}}_g^\mathrm{ct}\rightarrow \mathcal{A}_G$ is the Torelli map.
+where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\mathcal{M}_g^\mathrm{ct}\rightarrow \mathcal{A}_G$ is the Torelli map.
 It also illustrated the decorated stable trees indexing the relevant strata.
 
 
@@ -23,7 +23,7 @@ Once the package is installed, you can load it with
 
 ## Functionality
 
-The package `TorelliTrees` exports three functions: `stratum_trees`, `compute_contributions`, and `adm_code`.
+This package exports three functions: `stratum_trees`, `compute_contributions`, and `adm_code`.
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 
@@ -38,17 +38,17 @@ For example, to generate the trees for $k=2, g_1=1, g_2=5$, use
     T15 = stratum_trees([1, 5])
 
 #### Drawing pictures:
-To export pdf files of the generated trees, use the optional argument `draw` together with the argument `folder_name`. This will produce latex code to include the generated pictures into a LaTeX document, assuming the generated pictures will be placed in the folder `folder_name`.
+To export pdf files of the generated trees, use the optional argument `draw` together with the argument `folder_name`. This will produce LaTeX code to include the generated pictures into a LaTeX document, assuming the generated pictures will be placed in the folder `folder_name`.
 For example, the code
 
     T15 = stratum_trees([1, 5]; draw=true, folder_name="A1A5/")
 
 produces the relevant trees for $\mathrm{Tor}^*[\mathcal{A}_1\times\mathcal{A}_5]$ and produces pdf files `tree_1.pdf`, `tree_2.pdf`, etc. in the current directory.
-It also prints the latex code, which will assume that those pdf files will be placed in the folder `A1A5/` relative to the latex file.
+It also prints the LaTeX code, assuming that those pdf files will be placed in the folder `A1A5/` relative to the LaTeX file.
 
 ### Step 2: Computing contributions using `compute_contributions`
 
-To compute the polynomial $\mathrm{Cont}_T$ in the edge variables and chern classes of the normal bundle for each $T$, simply run
+To compute the polynomial $\mathrm{Cont}_T$ in the edge variables and Chern classes of the normal bundle for each $T$, simply run
 
     compute_contributions(T15)
 
@@ -60,3 +60,11 @@ To obtain the admcycles code, execute
 
 The first `"A1A5"` argument means that the output will be a file called `A1A5.sage`.
 The second `"A1A5"` argument is a prefix used to name the variables in this sage file.
+
+Executing this sage file will produce a variable called `Torelli_pullback`, which is precisely
+
+$$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}].$$
+
+## Exampes
+
+The folder `output` contains the resulting sage files for a number of small cases.
