@@ -5,8 +5,8 @@ It produces [admcycles](https://pypi.org/project/admcycles/) code that, when exe
 
 $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\overline{\mathcal{M}}_{g}^\mathrm{ct})$$
 
-where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\overline{\mathcal{M}}_{g_1+\cdots+g_k}^\mathrm{ct}\rightarrow \mathcal{A}_G$ is the Torelli map.
-It can also 
+where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\overline{\mathcal{M}}_g^\mathrm{ct}\rightarrow \mathcal{A}_G$ is the Torelli map.
+It also illustrated the decorated stable trees indexing the strata.
 
 
 ## Installation
@@ -14,8 +14,8 @@ It can also
 To install the latest version of this package, first install [Julia](https://julialang.org/).
 To install the `TorelliTrees` package, launch Julia and execute
 
-    julia> using Pkg
-    julia> Pkg.add(url="https://github.com/dh604/TorelliTrees.jl")
+    using Pkg
+    Pkg.add(url="https://github.com/dh604/TorelliTrees.jl")
 
 Once the package is installed, you can load it with
 
@@ -27,32 +27,32 @@ The package `TorelliTrees` exports three functions: `stratum_trees`, `compute_co
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 
-This function returns the collection of stratum trees that are relevant for the computation of $\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]$.
+This function returns the collection of stratum trees that are relevant for the computation of $\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times\mathcal{A}_{g_k}]$.
 It also computes the smoothing relations between all of those trees.
 For example, to generate the trees for $k=2$, $(g_1,g_2)=(1, 4)$, use
 
-    julia> T15 = stratum_trees([1, 5])
+    T15 = stratum_trees([1, 5])
 
 #### Drawing pictures:
 To export pdf files of the generated trees, use the optional argument `draw` together with the argument `folder_name`. This will produce latex code to include the generated pictures into a LaTeX document, assuming the generated pictures will be placed in the folder `folder_name`.
 For example, the code
 
-    julia> T15 = stratum_trees([1, 5]; draw=true, folder_name="A1A5/")
+    T15 = stratum_trees([1, 5]; draw=true, folder_name="A1A5/")
 
-produces the relevant trees for $\mathrm{Tor}^*[\mathcal{A}_1\times\cdots\times \mathcal{A}_5]$ and produces pdf files `tree_1.pdf`, `tree_2.pdf`, etc. in the current directory.
+produces the relevant trees for $\mathrm{Tor}^*[\mathcal{A}_1\times\cdots\times\mathcal{A}_5]$ and produces pdf files `tree_1.pdf`, `tree_2.pdf`, etc. in the current directory.
 It also prints the latex code, which will assume that those pdf files will be placed in the folder `A1A5/` relative to the latex file.
 
 ### Step 2: Computing contributions using `compute_contributions`
 
 To compute the polynomial $\mathrm{Cont}_T$ in the edge variables and chern classes of the normal bundle for each $T$, simply run
 
-    julia> compute_contributions(T15)
+    compute_contributions(T15)
 
 ### Step 3: Exporting `admcycles` code using `adm_code`
 
 To obtain the admcycles code, execute
 
-    julia> adm_code(T15, "A1A5", "A1A5")
+    adm_code(T15, "A1A5", "A1A5")
 
 The first `"A1A5"` argument means that the output will be a file called `A1A5.sage`.
 The second `"A1A5"` argument is a prefix used to name the variables in this sage file.
