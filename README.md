@@ -1,6 +1,6 @@
 # TorelliTrees
 
-This [Julia](https://julialang.org/) package is used for the computations in _[paper title]_ by _[paper authors]_.
+This [Julia](https://julialang.org/) package is used for some computations in _[paper title]_ by _[paper authors]_.
 It produces [admcycles](https://pypi.org/project/admcycles/) code that, when executed, computes
 
 $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\mathcal{M}_{g}^\mathrm{ct})$$
