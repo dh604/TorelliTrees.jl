@@ -6,7 +6,7 @@ It produces [admcycles](https://pypi.org/project/admcycles/) code that, when exe
 $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\overline{\mathcal{M}}_{g}^\mathrm{ct})$$
 
 where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\overline{\mathcal{M}}_g^\mathrm{ct}\rightarrow \mathcal{A}_G$ is the Torelli map.
-It also illustrated the decorated stable trees indexing the strata.
+It also illustrated the decorated stable trees indexing the relevant strata.
 
 
 ## Installation
@@ -27,7 +27,7 @@ The package `TorelliTrees` exports three functions: `stratum_trees`, `compute_co
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 
-This function returns the collection of stratum trees that are relevant for the computation of $\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times\mathcal{A}_{g_k}]$.
+This function returns the collection of stratum trees that are relevant for the computation of $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times\mathcal{A}_{g_k}]$$.
 It also computes the smoothing relations between all of those trees.
 For example, to generate the trees for $k=2$, $(g_1,g_2)=(1, 4)$, use
 
