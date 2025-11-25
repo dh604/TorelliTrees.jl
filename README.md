@@ -5,8 +5,8 @@ It produces [admcycles](https://pypi.org/project/admcycles/) code that, when exe
 
 $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\mathcal{M}_{g}^\mathrm{ct})$$
 
-where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\mathcal{M}_g^\mathrm{ct}\rightarrow \mathcal{A}_G$ is the Torelli map.
-It also illustrated the decorated stable trees indexing the relevant strata.
+where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\mathcal{M}_g^\mathrm{ct}\rightarrow \mathcal{A}_g$ is the Torelli map.
+It also illustrates the decorated stable trees indexing the relevant strata.
 
 
 ## Installation
