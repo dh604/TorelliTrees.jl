@@ -67,10 +67,16 @@ $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}].$$
 
 ### Remark on `adm_code_multithread`
 
-The function `adm_code_multithread` is a modified version of `adm_code` optimized for checking if $\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$ agrees with the tautological projection formula.
+The function `adm_code_multithread` is a modified version of `adm_code` optimized for checking if
+
+$$\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$$
+
+agrees with the tautological projection formula.
 It produces a specified number of sage files that can run in parallel.
 The output of each file is a rational number.
-Summing those gives the $\lambda_g$-evaluation of $\kappa_1\cdot \mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$.
+Summing those gives the $\lambda_g$-evaluation of 
+
+$$\kappa_1\cdot\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}].$$
 
 To compute the previous example with 3 parallel threads, use
 
