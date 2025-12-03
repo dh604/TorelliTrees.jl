@@ -23,7 +23,7 @@ Once the package is installed, you can load it with
 
 ## Functionality
 
-This package exports three functions: `stratum_trees`, `compute_contributions`, and `adm_code`.
+This package exports four functions: `stratum_trees`, `compute_contributions`, `adm_code`, and `adm_code_multithread`.
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 
@@ -64,6 +64,17 @@ The second `"A1A5"` argument means that the output will be a file called `A1A5.s
 Executing this sage file will produce a variable called `Torelli_pullback`, which is precisely
 
 $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}].$$
+
+### Remark on `adm_code_multithread`
+
+The function `adm_code_multithread` is a modified version of `adm_code` optimized for checking if $\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$ agrees with the tautological projection formula.
+It produces a specified number of sage files that can run in parallel.
+The output of each file is a rational number.
+Summing those gives the $\lambda_g$-evaluation of $\kappa_1\cdot \mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$.
+
+To compute the previous example with 3 parallel threads, use
+
+    adm_code_multithread(T15, "A1A5", "A1A5", 3)
 
 ## Exampes
 

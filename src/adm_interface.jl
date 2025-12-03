@@ -19,7 +19,61 @@ function adm_code(STs::Vector{StratumTree}, prefix::String, filename::String)
   close(io)
 end
 
-function _contrib_to_adm(st::StratumTree, prefix::String, treeNr::Int64, nTrees::Int64; print_compact::Bool=false)
+function adm_code_multithread(STs::Vector{StratumTree}, prefix::String, filename::String, n_threads::Int64)
+  @req n_threads > 0 "Need a positive number of threads."
+
+  g_tot = sum(STs[1].gen)
+
+  # Partition into threads of roughly equal computing time.
+
+  range_of_thread = _split_into_threads(STs, n_threads)
+
+  i = 0
+  for thread_nr in 1:n_threads
+
+    io = open(filename * "_thread_$(thread_nr)_of_$(n_threads).sage", "w")
+    write(io, "# $prefix thread $(thread_nr) of $n_threads\n\n")
+    write(io, "from admcycles import *\n\n")
+    write(io, "def lambdaclass(d,g,n):\n    R = TautologicalRing(g,n,moduli='ct')\n    return R.lambdaclass(d)\n\n")
+    write(io, "$(prefix)_sum_$thread_nr = 0;\n")
+    write(io, "R = TautologicalRing($(g_tot),0,moduli='ct')\n")
+    write(io, "k1 = R.kappa(1);\n\n")
+    
+    for st in STs[range_of_thread[thread_nr]]
+      i += 1
+      lns = _contrib_to_adm(st, prefix, i, length(STs); multithreading=true, thread_nr = thread_nr) #TODO: say we only want to evaluate here!
+      for l in lns
+        write(io, l)
+        write(io, "\n")
+      end
+      write(io, "\n")
+    end
+    write(io, "save($(prefix)_sum_$thread_nr, '$(prefix)_T_pullback_eval_$(thread_nr)_of_$n_threads');\n")
+    write(io, "f = open('$(prefix)_T_pullback_eval_$(thread_nr)_of_$n_threads.txt', 'w');\n")
+    write(io, "f.write(str($(prefix)_sum_$thread_nr));\n")
+    write(io, "f.close();\n")
+    write(io, "print('$prefix part $thread_nr of $n_threads times kappa_1 evaluates to: ');\n")
+    write(io, "print($(prefix)_sum_$thread_nr);\n")
+    close(io)
+  end
+end
+
+# May change this in future to achieve threads of roughly equal computing time.
+# Currently, every thread gets the same number of trees (except the last, which gets the remainder).
+function _split_into_threads(STs::Vector{StratumTree}, n_threads)::Vector{UnitRange{Int64}}
+  nst = length(STs)
+  d = div(nst, n_threads)
+  res = Vector{UnitRange{Int64}}()
+  last = 0
+  for _ in 1:n_threads-1
+    push!(res, (last+1):(last+d))
+    last = last + d
+  end
+  push!(res, (last+1):nst)
+  return res
+end
+
+function _contrib_to_adm(st::StratumTree, prefix::String, treeNr::Int64, nTrees::Int64; print_compact::Bool=false, multithreading::Bool=false, thread_nr::Int64=-1)
   cont = st.cont_t[1]
   cont_t = cont.cont_t
   GG = st.GG
@@ -106,22 +160,28 @@ function _contrib_to_adm(st::StratumTree, prefix::String, treeNr::Int64, nTrees:
   # Finally, convert result to admcycles code.
   output_lines = Vector{String}()
   push!(output_lines, string("$(prefix)_graph = ", _adm_stable_graph_def(st, edge_to_half_edge), ";"))
-  push!(output_lines, "$(prefix)_T$(treeNr)_terms = [];")
+  if multithreading
+    push!(output_lines, "$(prefix)_T$(treeNr)_term = 0;")
+  else
+    push!(output_lines, "$(prefix)_T$(treeNr)_terms = [];")
+  end
   push!(output_lines, "")
-  first_line = true
   lt = length(terms(F_filtered))
   tctr = 0
   for t in terms(F_filtered)
     tctr += 1
-    if first_line
-      push!(output_lines, string("$(prefix)_T$(treeNr)_terms.append($(prefix)_graph.boundary_pushforward(", _adm_summand_def_bracket_part(st, t, gen_to_vertex, ADM_gens) , "));"))
-      first_line = false
+    if multithreading
+      push!(output_lines, string("$(prefix)_T$(treeNr)_term += (k1 * $(prefix)_graph.boundary_pushforward(", _adm_summand_def_bracket_part(st, t, gen_to_vertex, ADM_gens) , ")).evaluate(moduli='ct');"))
     else
       push!(output_lines, string("$(prefix)_T$(treeNr)_terms.append($(prefix)_graph.boundary_pushforward(", _adm_summand_def_bracket_part(st, t, gen_to_vertex, ADM_gens) , "));"))
     end
     push!(output_lines, "print('Computed term $tctr / $lt of tree $treeNr / $nTrees');")
   end
-  push!(output_lines, "$(prefix)_summands.append( 1/$(count_auts(st)) * R.sum($(prefix)_T$(treeNr)_terms));")
+  if multithreading
+    push!(output_lines, "$(prefix)_sum_$thread_nr += 1/$(count_auts(st)) * $(prefix)_T$(treeNr)_term;")
+  else
+    push!(output_lines, "$(prefix)_summands.append( 1/$(count_auts(st)) * R.sum($(prefix)_T$(treeNr)_terms));")
+  end
   return output_lines
 end
 

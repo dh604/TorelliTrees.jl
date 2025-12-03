@@ -14,6 +14,6 @@ include("contributions.jl")
 include("chern.jl")
 include("adm_interface.jl")
 
-export stratum_trees, compute_contributions, adm_code
+export stratum_trees, compute_contributions, adm_code, adm_code_multithread
 
 end
