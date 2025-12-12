@@ -7,6 +7,7 @@ $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\ma
 
 where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\mathcal{M}_g^\mathrm{ct}\rightarrow \mathcal{A}_g$ is the Torelli map.
 It also illustrates the decorated stable trees indexing the relevant strata.
+Here are some examples for $k=2, g_1=2,g_2=4$:
 
 <p align=center>
 <img src="trees.png" alt="Some trees for A2A4" width="55%"/>
