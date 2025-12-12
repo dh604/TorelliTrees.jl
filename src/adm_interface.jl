@@ -19,6 +19,7 @@ function adm_code(STs::Vector{StratumTree}, prefix::String, filename::String)
   close(io)
 end
 
+# Multiplies by k1, so only makes sense for A_2 x A_{g-2}.
 function adm_code_multithread(STs::Vector{StratumTree}, prefix::String, filename::String, n_threads::Int64)
   @req n_threads > 0 "Need a positive number of threads."
 

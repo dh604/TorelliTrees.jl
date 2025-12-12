@@ -65,7 +65,26 @@ Executing this sage file will produce a variable called `Torelli_pullback`, whic
 
 $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}].$$
 
-### Remark on `adm_code_multithread`
+### Remark on `adm_code_hodge`
+
+The function `adm_code_hodge` is a modified version of `adm_code` optimized for checking if
+
+$$\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$$
+
+agrees with the tautological projection formula.
+It produces a sage file that, when executed, computes
+
+$$\kappa_1\cdot\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}].$$
+
+efficiently using `admcycles`' function `hodge_integrals`.
+The result is stored in a file.
+For example, the following code creates the sage file `A2A4_hodge.sage` which, when executed, computes the case $(2, 4)$ and stores the result in the file `A2A4_k1_integral.txt`.
+
+    T24 = stratum_trees([2, 4])
+    compute_contributions(T24)
+    adm_code_hodge(T24, "A2A4", "A2A4_hodge")
+
+### Remark on `adm_code_multithread` (deprecated)
 
 The function `adm_code_multithread` is a modified version of `adm_code` optimized for checking if
 
@@ -78,9 +97,12 @@ Summing those gives the $\lambda_g$-evaluation of
 
 $$\kappa_1\cdot\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}].$$
 
-To compute the previous example with 3 parallel threads, use
+To compute the case $(2, 4)$ with 3 parallel threads, use
 
-    adm_code_multithread(T15, "A1A5", "A1A5", 3)
+    T24 = stratum_trees([2, 4])
+    compute_contributions(T24)
+    adm_code_multithread(T24, "A2A4", "A2A4", 3)
+
 
 ## Exampes
 
