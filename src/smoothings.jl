@@ -169,7 +169,3 @@ function _contains_smoothing_up_to_ST1_aut(smoothings::Vector{Abstract_ST_smooth
   end
   return false
 end
-
-function _count_auts(sm::Abstract_ST_smoothing)::Int64
-  
-end
