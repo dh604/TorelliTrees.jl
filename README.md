@@ -1,7 +1,3 @@
-<p align=center>
-<img src="trees.png" alt="dSome trees for A2A4" width="50%"/>
-</p>
-
 # TorelliTrees
 
 This [Julia](https://julialang.org/) package is used for some computations in _[paper title]_ by _[paper authors]_.
@@ -12,6 +8,9 @@ $$\mathrm{Tor}^*[\mathcal{A}_{g_1}\times\cdots\times \mathcal{A}_{g_k}]\in R(\ma
 where $g=g_1+\dots+g_k$ and $\mathrm{Tor}:\mathcal{M}_g^\mathrm{ct}\rightarrow \mathcal{A}_g$ is the Torelli map.
 It also illustrates the decorated stable trees indexing the relevant strata.
 
+<p align=center>
+<img src="trees.png" alt="Some trees for A2A4" width="55%"/>
+</p>
 
 ## Installation
 
