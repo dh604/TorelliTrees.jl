@@ -1,6 +1,6 @@
-# TorelliTrees
+<img src="trees.png" alt="dSome trees for A2A4" width="50%" style="float: right;"/>
 
-<img src="trees.png" alt="dSome trees for A2A4" width="70%"/>
+# TorelliTrees
 
 This [Julia](https://julialang.org/) package is used for some computations in _[paper title]_ by _[paper authors]_.
 It produces [admcycles](https://pypi.org/project/admcycles/) code that, when executed, computes
