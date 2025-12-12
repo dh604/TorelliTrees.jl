@@ -23,7 +23,7 @@ Once the package is installed, you can load it with
 
 ## Functionality
 
-This package exports four functions: `stratum_trees`, `compute_contributions`, `adm_code`, and `adm_code_multithread`.
+This package exports four functions: `stratum_trees`, `compute_contributions`, `adm_code`, `adm_code_hodge`, and `adm_code_multithread`.
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 
@@ -72,11 +72,11 @@ The function `adm_code_hodge` is a modified version of `adm_code` optimized for 
 $$\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$$
 
 agrees with the tautological projection formula.
-It produces a sage file that, when executed, computes
+It produces a sage file that, when executed, computes the $\lambda_g$ evaluation of
 
-$$\kappa_1\cdot\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}].$$
+$$\kappa_1\cdot\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$$
 
-efficiently using `admcycles`' function `hodge_integrals`.
+efficiently using the `admcycles` function `hodge_integrals`.
 The result is stored in a file.
 For example, the following code creates the sage file `A2A4_hodge.sage` which, when executed, computes the case $(2, 4)$ and stores the result in the file `A2A4_k1_integral.txt`.
 
@@ -84,9 +84,9 @@ For example, the following code creates the sage file `A2A4_hodge.sage` which, w
     compute_contributions(T24)
     adm_code_hodge(T24, "A2A4", "A2A4_hodge")
 
-### Remark on `adm_code_multithread` (deprecated)
+### Remark on `adm_code_multithread` (deprecated, use `adm_code_hodge` instead)
 
-The function `adm_code_multithread` is a modified version of `adm_code` optimized for checking if
+The function `adm_code_multithread` is a (deprecated) modified version of `adm_code` optimized for checking if
 
 $$\mathrm{Tor}^*[\mathcal{A}_2\times\mathcal{A}_{g-2}]$$
 
