@@ -1,4 +1,6 @@
-<img src="trees.png" alt="dSome trees for A2A4" width="50%" style="float: right;"/>
+<p align=center>
+<img src="trees.png" alt="dSome trees for A2A4" width="50%"/>
+</p>
 
 # TorelliTrees
 
