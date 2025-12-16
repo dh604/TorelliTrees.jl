@@ -14,6 +14,7 @@ include("contributions.jl")
 include("chern.jl")
 include("adm_interface.jl")
 include("adm_interface_hodge.jl")
+include("stats.jl")
 
 export stratum_trees, compute_contributions, adm_code, adm_code_multithread, adm_code_hodge
 
