@@ -18,5 +18,6 @@ function save_stratum_trees(gs::Vector{Vector{Int64}}, filename::String; printSt
     f = open(filename, "a")
     write(f, "Number of (irred/any) g-extremal trees for g=$g: $((a, b))\n")
     close(f)
+    GC.gc()
   end
 end
