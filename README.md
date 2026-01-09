@@ -27,7 +27,7 @@ Once the package is installed, you can load it with
 
 ## Functionality
 
-This package exports four functions: `stratum_trees`, `compute_contributions`, `adm_code`, `adm_code_hodge`, and `adm_code_multithread`.
+This package exports four main functions: `stratum_trees`, `compute_contributions`, `adm_code`, `adm_code_hodge`, and `adm_code_multithread`.
 
 ### Step 1: Generating stratum trees using `stratum_trees`
 

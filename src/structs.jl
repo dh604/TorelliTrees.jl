@@ -30,6 +30,13 @@ struct ST_smoothing <: Abstract_ST_smoothing
   edge_map::Dict{GraphsEdgeType, GraphsEdgeType} # should contain both orientations: E(ST1) -> E(ST2)
 end
 
+struct ST_backup
+  STs::Vector{StratumTree}
+  last_index_with_cont_t::Int64
+  prefix::String
+  print_contributions::Bool
+end
+
 function Base.show(io::IO, ST::StratumTree)
 
   if Oscar.is_terse(io)
