@@ -156,7 +156,7 @@ function _stratum_trees(max_nv::Int64, g::Vector{Int64}, min_per_cols::Vector{In
               edge_map_after_iso[Graphs.reverse(e)] = Graphs.reverse(e_target)
             end
 
-            final_sm_object = ST_smoothing(st_sm, st, vertex_map_after_iso, edge_map_after_iso)
+            final_sm_object = ST_smoothing(st_sm, vertex_map_after_iso, edge_map_after_iso)
             push!(st.min_smoothings, final_sm_object)
           end
         end

@@ -25,7 +25,7 @@ end
 
 struct ST_smoothing <: Abstract_ST_smoothing
   ST1::StratumTree # ST1 is a smoothing of ST2
-  ST2::StratumTree # ST2 is a degeneration of ST1
+  #ST2::StratumTree # ST2 is a degeneration of ST1 # we remove this redundance to fix serialization.
   vertex_map::Vector{Vector{Int64}} # vertex_map[v] is the vertices of ST2 corresponding to v in ST1.
   edge_map::Dict{GraphsEdgeType, GraphsEdgeType} # should contain both orientations: E(ST1) -> E(ST2)
 end

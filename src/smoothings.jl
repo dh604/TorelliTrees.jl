@@ -126,7 +126,13 @@ end
 
 # Concatenate two smoothings sm1 and sm2, where sm1 degenerates T0 to T1 and sm2 degenerates T1 to T2.
 function _concatenate(sm1::ST_smoothing, sm2::ST_smoothing)::ST_smoothing
-  @req sm1.ST2 == sm2.ST1 "Canont concatenate incompatible smoothings"
+
+  # We comment out the test below as it worked in all examples and we
+  # have to get rid of the redundant sm1.ST2.
+  # the check may be reintroduced using hashs for STs objects if desired.
+
+  # @req sm1.ST2 == sm2.ST1 "Canont concatenate incompatible smoothings"
+
   # Concatenate edge map
   edge_map = Dict{GraphsEdgeType, GraphsEdgeType}()
   for e in keys(sm1.edge_map)
@@ -141,7 +147,7 @@ function _concatenate(sm1::ST_smoothing, sm2::ST_smoothing)::ST_smoothing
     end
     push!(vertex_map, sort(unique(vert_v0_part)))
   end
-  return ST_smoothing(sm1.ST1, sm2.ST2, vertex_map, edge_map)
+  return ST_smoothing(sm1.ST1, vertex_map, edge_map)
 end
 
 # Use this on the result of stratum_trees(...) to calculate all smoothings.
@@ -159,7 +165,12 @@ end
 
 function _contains_smoothing_up_to_ST1_aut(smoothings::Vector{Abstract_ST_smoothing}, sm::Abstract_ST_smoothing)::Bool
   for sm_prev in smoothings
-    if sm_prev.ST1 == sm.ST1 && sm_prev.ST2 == sm.ST2
+    
+    # We comment out the second check below as it is automatically satisfied in
+    # all calls to this function.
+    # This allows us to remove the redundant field sm.ST2.
+
+    if sm_prev.ST1 == sm.ST1 # && sm_prev.ST2 == sm.ST2
       ST1 = sm.ST1
       ST1_aut_reln(u, v) = ST1.col[u] == ST1.col[v] && ST1.gen[u] == ST1.gen[v] && sm_prev.vertex_map[u] == sm.vertex_map[v]
       if Graphs.Experimental.has_isomorph(ST1.GG, ST1.GG; vertex_relation = ST1_aut_reln)
