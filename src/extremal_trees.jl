@@ -75,7 +75,7 @@ function _stratum_trees(max_nv::Int64, g::Vector{Int64}, min_per_cols::Vector{In
         push!(ls_col_gens, gen)
 
         # Found a new stratum tree!
-        st = StratumTree(ls, GG, col, gen, Vector{ST_smoothing}(), Vector{ST_smoothing}(), Vector{Cont_t_container}(undef, 1))
+        st = StratumTree(ls, GG, col, gen, Vector{ST_smoothing}(), Vector{ST_smoothing}(), Vector{Cont_t_container}())
         # println("\nCreating tree $st with edges:")
         # println(collect(Graphs.edges(GG)))
         # println()

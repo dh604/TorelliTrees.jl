@@ -43,12 +43,18 @@ function _resume_compute_contributions_backup(STB::ST_backup)
 end
 
 function _write_backup_and_delete_old(prefix::String, STs::Vector{StratumTree}, print_contributions::Bool, last_index_with_cont_t::Int64)
-  backup_name_1 = prefix * "_A.jls"
-  backup_name_2 = prefix * "_B.jls"
-  sizediff = filesize(backup_name_2) - filesize(backup_name_1)
-  backup_name = sizediff > 0 ? backup_name_1 : backup_name_2
-  delete_name = sizediff > 0 ? backup_name_2 : backup_name_1
+  backup_name_1 = prefix * "_A.oscar"
+  backup_name_2 = prefix * "_B.oscar"
+  # Determine which backup is older (or doesn't exist) - overwrite that one
+  mtime1 = isfile(backup_name_1) ? mtime(backup_name_1) : 0.0
+  mtime2 = isfile(backup_name_2) ? mtime(backup_name_2) : 0.0
+  # Overwrite the older file (smaller mtime), delete the newer one
+  backup_name = mtime1 <= mtime2 ? backup_name_1 : backup_name_2
+  delete_name = mtime1 <= mtime2 ? backup_name_2 : backup_name_1
 
   STB = ST_backup(STs, last_index_with_cont_t, prefix, print_contributions)
   save_stratum_trees(backup_name, STB)
+
+  # Delete old backup if it exists
+  rm(delete_name, force=true)
 end

@@ -39,12 +39,18 @@ function _compute_contribution(st::StratumTree)
     denom_factors = [1 + edge_to_gen[e] for e in edge_vect]
     # result in terms of z_e's and ls_i's.
     cont_t = homogeneous_component(c_tot_c * _denominator_to_power_series(denom_factors, cont_t_deg), cont_t_deg)
-    st.cont_t[1] = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
+    new_cont_t_obj = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
+    if length(st.cont_t) == 0
+      push!(st.cont_t, new_cont_t_obj)
+    else
+      st.cont_t[1] = new_cont_t_obj
+    end
     return cont_t
   else
     # Not an irreducible component, apply the recursion.
     cont_t_times_z = ci[N_deg]
     for sm in st.all_smoothings
+      @req length(sm.ST1.cont_t) == 1 "Smoothing $sm of $st misses cont_t. it has length $(length(sm.ST1.cont_t))"
       container = sm.ST1.cont_t[1]
       cont_of_sm = container.cont_t
       eval_vector = vcat([edge_to_gen[sm.edge_map[e]] for e in container.edge_vect], [zero(R) for _ in 1:container.nl], ci[1:container.N_deg])
@@ -69,7 +75,12 @@ function _compute_contribution(st::StratumTree)
     prod_e = prod(e -> edge_to_gen[e], edge_vect)
     @req is_divisible_by(cont_t_times_z, prod_e) "cont_t_times_z is not divisible by prod_e!"
     cont_t = div(cont_t_times_z, prod_e)
-    st.cont_t[1] = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
+    new_cont_t_obj = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
+    if length(st.cont_t) == 0
+      push!(st.cont_t, new_cont_t_obj)
+    else
+      st.cont_t[1] = new_cont_t_obj
+    end
     return cont_t
   end
 end

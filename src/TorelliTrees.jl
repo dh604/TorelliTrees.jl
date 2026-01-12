@@ -1,7 +1,7 @@
 module TorelliTrees
 
 using Oscar, Combinatorics, Graphs
-using Serialization, Dates
+using Dates
 
 import Oscar: Graph, Edge, all_neighbors, src, dst, add_vertex!, add_edge!, isvalid, is_connected, is_simple, is_loopless, neighbors, degree, indegree, outdegree, has_edge, has_vertex, vertices, edges, nv, ne
 
@@ -21,5 +21,10 @@ include("contributions_w_backup.jl")
 
 export stratum_trees, compute_contributions, adm_code, adm_code_multithread, adm_code_hodge
 export compute_contributions_backup, load_and_resume_contributions_backup
+
+# Register serialization types with Oscar when module is loaded
+function __init__()
+    _register_serialization_types()
+end
 
 end

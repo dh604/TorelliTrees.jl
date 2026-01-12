@@ -1,33 +1,30 @@
 @doc raw"""
-    save_stratum_trees(filename::String, trees::Vector{StratumTree})
+    save_stratum_trees(filename::String, STB::ST_backup)
 
-Save a vector of StratumTree objects to a file using Julia's serialization.
+Save an ST_backup object to a file using Oscar's serialization.
 
 # Arguments
-- `filename::String`: Path to the output file (will add .jls extension if not present)
-- `trees::Vector{StratumTree}`: Vector of StratumTree objects to save
+- `filename::String`: Path to the output file (will add .oscar extension if not present)
+- `STB::ST_backup`: ST_backup object to save
 
 # Example
 ```julia
 T14 = stratum_trees([1, 4])
-save_stratum_trees("T14.jls", T14)
+save_stratum_trees("T14.oscar", STB)
 ```
 
 # Notes
-The file format (.jls) is Julia-specific and preserves the exact structure of the objects,
-including circular references. Files can only be loaded with compatible Julia and package versions.
+Uses Oscar's native serialization which properly handles polynomial types across
+different Julia sessions and environments.
 """
 function save_stratum_trees(filename::String, STB::ST_backup)
-    # Add .jls extension if not present
-    if !endswith(filename, ".jls")
-        filename = filename * ".jls"
+    # Add .oscar extension if not present
+    if !endswith(filename, ".oscar")
+        filename = filename * ".oscar"
     end
 
-    open(filename, "w") do io
-        serialize(io, STB)
-        close(io)
-    end
-    
+    Oscar.save(filename, STB)
+
     trees = STB.STs
     cont_max = STB.last_index_with_cont_t
     println("Saved $(length(trees)) StratumTree(s) with $cont_max computed contributions to $filename")
@@ -37,34 +34,30 @@ end
 @doc raw"""
     load_stratum_trees(filename::String)
 
-Load a vector of StratumTree objects from a file.
+Load an ST_backup object from a file.
 
 # Arguments
-- `filename::String`: Path to the input file (will add .jls extension if not present)
+- `filename::String`: Path to the input file (will add .oscar extension if not present)
 
 # Returns
-- `Vector{StratumTree}`: Vector of loaded StratumTree objects
+- `ST_backup`: Loaded ST_backup object
 
 # Example
 ```julia
-T14 = load_stratum_trees("T14.jls")
+STB = load_stratum_trees("T14.oscar")
 ```
 
 # Notes
-This function loads files created with `save_stratum_trees`. The file format is Julia-specific
-and requires compatible Julia and package versions.
+This function loads files created with `save_stratum_trees`. Uses Oscar's native
+serialization which properly handles polynomial types.
 """
 function load_stratum_trees(filename::String)::ST_backup
-    # Add .jls extension if not present
-    if !endswith(filename, ".jls")
-        filename = filename * ".jls"
+    # Add .oscar extension if not present
+    if !endswith(filename, ".oscar")
+        filename = filename * ".oscar"
     end
 
-    STB = open(filename, "r") do io
-        res = deserialize(io)
-        close(io)
-        return res
-    end
+    STB = Oscar.load(filename)
 
     trees = STB.STs
     n_cont = STB.last_index_with_cont_t
