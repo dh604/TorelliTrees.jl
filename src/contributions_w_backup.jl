@@ -29,7 +29,7 @@ function _resume_compute_contributions_backup(STB::ST_backup)
     end
 
     # create new backpup if necessary and delete old backup afterwards
-    if now() - last_backup_time >= Day(1)
+    if now() - last_backup_time >= Second(1) # Day(1)
       
       _write_backup_and_delete_old(prefix, STs, print_contributions, last_index_with_cont_t)
 
