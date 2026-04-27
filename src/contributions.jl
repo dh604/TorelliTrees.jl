@@ -9,7 +9,7 @@ function compute_contributions(STs::Vector{StratumTree}; print_contributions::Bo
 end
 
 # Compute the contribution polynomial of this stratum tree, assuming the contributions of all its smoothings have been computed.
-function _compute_contribution(st::StratumTree)
+function _compute_contribution(st::StratumTree; low_degree_optimization::Bool=true)
   ne = Graphs.ne(st.GG)
   cps = _critical_paths(st)
   N_deg = _tor_pullback_deg(st) # >= _cont_deg(st), so there are always enough chern classes to substitute for the l's.
@@ -29,60 +29,154 @@ function _compute_contribution(st::StratumTree)
     edge_to_gen[e] = g[j]
     edge_to_gen[Graphs.reverse(e)] = g[j]
   end
-  c_tot_z_l = _tot_chern_class(edge_to_gen, ls, cps)
-  c_tot_c = sum(vcat([one(R)], ci))
-  # println(factor(c_tot_z_l))
-  # println(c_tot_c)
 
   if count(c -> c == 1, st.col) == 0
     # Irreducible component, apply excess intersection formula
+    c_tot_c = sum(vcat([one(R)], ci))
     denom_factors = [1 + edge_to_gen[e] for e in edge_vect]
     # result in terms of z_e's and ls_i's.
     cont_t = homogeneous_component(c_tot_c * _denominator_to_power_series(denom_factors, cont_t_deg), cont_t_deg)
-    new_cont_t_obj = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
-    if length(st.cont_t) == 0
-      push!(st.cont_t, new_cont_t_obj)
-    else
-      st.cont_t[1] = new_cont_t_obj
-    end
+    _store_cont_t!(st, cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
     return cont_t
   else
     # Not an irreducible component, apply the recursion.
-    cont_t_times_z = ci[N_deg]
-    for sm in st.all_smoothings
-      @req length(sm.ST1.cont_t) == 1 "Smoothing $sm of $st misses cont_t. it has length $(length(sm.ST1.cont_t))"
-      container = sm.ST1.cont_t[1]
-      cont_of_sm = container.cont_t
-      eval_vector = vcat([edge_to_gen[sm.edge_map[e]] for e in container.edge_vect], [zero(R) for _ in 1:container.nl], ci[1:container.N_deg])
-      # println(eval_vector)
-      cont_of_sm_evaluated = evaluate(cont_of_sm, eval_vector)
-      cont_t_times_z -= cont_of_sm_evaluated * prod(e -> edge_to_gen[sm.edge_map[e]], container.edge_vect)
-    end
-    # println("Cont_t_times z: $cont_t_times_z")
-
-    # First, we need to express everything in terms of ls.
-    eval_vec_ci_to_ls = copy(gens(R))
-    foreach(i -> eval_vec_ci_to_ls[ne+nl+i] = homogeneous_component(c_tot_z_l, i), 1:N_deg)
-    cont_t_times_z = evaluate(cont_t_times_z, eval_vec_ci_to_ls)
-
-    # Second, we need to substitute the (fewer) ls in terms of chern classes again.
-    l_tot_z_c = c_tot_c * _denominator_to_power_series(_crit_path_factors(edge_to_gen, cps), nl) # was N_deg
-    eval_vec_ls_to_ci = copy(gens(R))
-    foreach(i -> eval_vec_ls_to_ci[ne+i] = homogeneous_component(l_tot_z_c, i), 1:nl)
-    cont_t_times_z = evaluate(cont_t_times_z, eval_vec_ls_to_ci)
-
-    # Finally, we need to divide the result by the edge product and are done.
-    prod_e = prod(e -> edge_to_gen[e], edge_vect)
-    @req is_divisible_by(cont_t_times_z, prod_e) "cont_t_times_z is not divisible by prod_e!"
-    cont_t = div(cont_t_times_z, prod_e)
-    new_cont_t_obj = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
-    if length(st.cont_t) == 0
-      push!(st.cont_t, new_cont_t_obj)
+    if low_degree_optimization && cont_t_deg <= 1 # && N_deg >= 8
+      cont_t = _compute_contribution_low_degree(
+        st, ne, nl, N_deg, edge_vect, edge_to_gen, ci, cps,
+      )
     else
-      st.cont_t[1] = new_cont_t_obj
+      c_tot_z_l = _tot_chern_class(edge_to_gen, ls, cps)
+      c_tot_c = sum(vcat([one(R)], ci))
+      cont_t = _compute_contribution_general(
+        st, ne, nl, N_deg, edge_vect, edge_to_gen, ci, c_tot_z_l, c_tot_c, cps,
+      )
     end
+    _store_cont_t!(st, cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
     return cont_t
   end
+end
+
+function _store_cont_t!(
+  st::StratumTree,
+  cont_t::PolyType,
+  ne::Int64,
+  nl::Int64,
+  N_deg::Int64,
+  edge_vect::Vector{GraphsEdgeType},
+  edge_to_gen::Dict{GraphsEdgeType, PolyType},
+)
+  new_cont_t_obj = Cont_t_container(cont_t, ne, nl, N_deg, edge_vect, edge_to_gen)
+  if length(st.cont_t) == 0
+    push!(st.cont_t, new_cont_t_obj)
+  else
+    st.cont_t[1] = new_cont_t_obj
+  end
+end
+
+function _compute_contribution_general(
+  st::StratumTree,
+  ne::Int64,
+  nl::Int64,
+  N_deg::Int64,
+  edge_vect::Vector{GraphsEdgeType},
+  edge_to_gen::Dict{GraphsEdgeType, PolyType},
+  ci::Vector{PolyType},
+  c_tot_z_l::PolyType,
+  c_tot_c::PolyType,
+  cps::Vector{Vector{GraphsEdgeType}},
+)::PolyType
+  cont_t_times_z = ci[N_deg]
+  for sm in st.all_smoothings
+    @req length(sm.ST1.cont_t) == 1 "Smoothing $sm of $st misses cont_t. it has length $(length(sm.ST1.cont_t))"
+    container = sm.ST1.cont_t[1]
+    cont_of_sm = container.cont_t
+    eval_vector = vcat(
+      [edge_to_gen[sm.edge_map[e]] for e in container.edge_vect],
+      [zero(parent(ci[1])) for _ in 1:container.nl],
+      ci[1:container.N_deg],
+    )
+    cont_of_sm_evaluated = evaluate(cont_of_sm, eval_vector)
+    cont_t_times_z -= cont_of_sm_evaluated * prod(e -> edge_to_gen[sm.edge_map[e]], container.edge_vect)
+  end
+  # println("Cont_t_times z: $cont_t_times_z")
+
+  # First, we need to express everything in terms of ls.
+  eval_vec_ci_to_ls = copy(gens(parent(ci[1])))
+  foreach(i -> eval_vec_ci_to_ls[ne+nl+i] = homogeneous_component(c_tot_z_l, i), 1:N_deg)
+  cont_t_times_z = evaluate(cont_t_times_z, eval_vec_ci_to_ls)
+
+  # Second, we need to substitute the (fewer) ls in terms of chern classes again.
+  l_tot_z_c = c_tot_c * _denominator_to_power_series(_crit_path_factors(edge_to_gen, cps), nl)
+  eval_vec_ls_to_ci = copy(gens(parent(ci[1])))
+  foreach(i -> eval_vec_ls_to_ci[ne+i] = homogeneous_component(l_tot_z_c, i), 1:nl)
+  cont_t_times_z = evaluate(cont_t_times_z, eval_vec_ls_to_ci)
+
+  # Finally, we need to divide the result by the edge product and are done.
+  prod_e = prod(e -> edge_to_gen[e], edge_vect)
+  @req is_divisible_by(cont_t_times_z, prod_e) "cont_t_times_z is not divisible by prod_e!"
+  return div(cont_t_times_z, prod_e)
+end
+
+function _compute_contribution_low_degree(
+  st::StratumTree,
+  ne::Int64,
+  nl::Int64,
+  N_deg::Int64,
+  edge_vect::Vector{GraphsEdgeType},
+  edge_to_gen::Dict{GraphsEdgeType, PolyType},
+  ci::Vector{PolyType},
+  cps::Vector{Vector{GraphsEdgeType}},
+)::PolyType
+  low_var_names = vcat(
+    ["x$(Graphs.src(e))$(Graphs.dst(e))" for e in edge_vect],
+    ["ls$i" for i in 1:nl],
+    N_deg == 0 ? String[] : ["c1"],
+  )
+  low_var_degs = vcat(
+    [1 for _ in edge_vect],
+    [i for i in 1:nl],
+    N_deg == 0 ? Int64[] : [1],
+  )
+  R_low, g_low = graded_polynomial_ring(QQ, low_var_names, low_var_degs)
+  ls_low = g_low[ne+1:ne+nl]
+  c1_low = N_deg == 0 ? zero(R_low) : g_low[end]
+  edge_to_gen_low = Dict{GraphsEdgeType, PolyType}()
+  for j in 1:ne
+    e = edge_vect[j]
+    edge_to_gen_low[e] = g_low[j]
+    edge_to_gen_low[Graphs.reverse(e)] = g_low[j]
+  end
+
+  c_tot_z_l_low = _tot_chern_class(edge_to_gen_low, ls_low, cps)
+  ci_to_ls_low = [homogeneous_component(c_tot_z_l_low, i) for i in 1:N_deg]
+  cont_t_times_z = ci_to_ls_low[N_deg]
+  for sm in st.all_smoothings
+    @req length(sm.ST1.cont_t) == 1 "Smoothing $sm of $st misses cont_t. it has length $(length(sm.ST1.cont_t))"
+    container = sm.ST1.cont_t[1]
+    eval_vector = vcat(
+      [edge_to_gen_low[sm.edge_map[e]] for e in container.edge_vect],
+      [zero(R_low) for _ in 1:container.nl],
+      ci_to_ls_low[1:container.N_deg],
+    )
+    cont_t_times_z -= evaluate(container.cont_t, eval_vector) * prod(e -> edge_to_gen_low[sm.edge_map[e]], container.edge_vect)
+  end
+
+  l_tot_z_c_low = (one(R_low) + c1_low) * _denominator_to_power_series(_crit_path_factors(edge_to_gen_low, cps), nl)
+  eval_vec_ls_to_ci_low = copy(gens(R_low))
+  foreach(i -> eval_vec_ls_to_ci_low[ne+i] = homogeneous_component(l_tot_z_c_low, i), 1:nl)
+  cont_t_times_z = evaluate(cont_t_times_z, eval_vec_ls_to_ci_low)
+
+  prod_e_low = prod(e -> edge_to_gen_low[e], edge_vect)
+  @req is_divisible_by(cont_t_times_z, prod_e_low) "Low-degree cont_t_times_z is not divisible by prod_e!"
+  cont_t_low = div(cont_t_times_z, prod_e_low)
+
+  R = parent(ci[1])
+  lift_vector = vcat(
+    [edge_to_gen[e] for e in edge_vect],
+    [zero(R) for _ in 1:nl],
+    N_deg == 0 ? PolyType[] : [ci[1]],
+  )
+  return evaluate(cont_t_low, lift_vector)
 end
 
 function _crit_path_prod(edge_to_gen::Dict{GraphsEdgeType, PolyType}, cps::Vector{Vector{GraphsEdgeType}})::PolyType
